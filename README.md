@@ -17,6 +17,12 @@ If you are using Apollo v1 please use
 > of [Apollo], [GraphQL], [React 16], [React Native], [Expo], [Redux], [Express] with SQL storage support, for styling
 > [Twitter Bootstrap], [NativeBase] and [Ant Design] integration. Hot Code Reload of back end & front end using
 > [Webpack] and Hot Module Replacement to reflect your changes instantly and help you stay productive.
+>
+> A powerful aspect of this kit is the organization of the code into self-contained modules called features.
+> A command line script generates client or server side boilerplate and wires it into the infrastructure. Features
+> keep all the functionality for components in a single place and provide a standard structure. A client feature
+> is an object which encapsulates a React component plus its routes, reducer(s), representation in the navBar,
+> and other aspects, for example. See the section on Features for more detail.
 
 ## Hot Code Reload demo
 
@@ -200,11 +206,14 @@ There are also application config options available in `app.json` to aid with de
 | debugSQL      | Print executed by backend SQL commands |
 | apolloLogging | Log all Apollo GraphQL operations      |
 
-### Feature Modules Scaffolding with CLI
+## Features
 
 This starter kit encourages modular design of application features. Each feature should be designed as a decoupled
-module, deleting feature should ideally not break the remaining application. Basic feature module scaffolding is
-provided with the following command:
+module, deleting feature should ideally not break the remaining application.
+
+### Feature Modules Scaffolding with CLI
+
+Basic feature module scaffolding is provided with the following command:
 
 ```
 yarn cli addmodule <moduleName>
@@ -233,6 +242,47 @@ Run the following command to see the CLI help:
 
 ```
 yarn cli
+```
+
+#### Client Feature Structure
+
+Client modules make a distinction between [presentational and container components](https://medium.com/@dan_abramov/smart-and-dumb-components-7ca2f9a7c7d0 ).
+
+The command `yarn cli addmodule foo client` creates a folder with the following structure inside `src/client/modules`:
+
+```
+client/modules
+└── foo                      # The client feature module 
+    ├── components           # Presentational components
+    │   ├── FooView.jsx      #     React Native
+    │   └── FooView.web.jsx  #     Web 
+    ├── containers           # The Container component
+    │   ├── Foo.jsx          #     Binds graphql query to the component
+    │   └── Foo.spec.js      #     Spec tests
+    ├── graphql              # Queries needed by this component
+    │   └── Foo.graphql      # 
+    ├── reducers             # 
+    │   └── index.js         # Reducer function
+    ├── index.js             # React native representation of Foo as a client Feature
+    └── index.web.js         # Web representation of Foo as a client Feature
+```
+
+Note that the cli automagically adds the default object exported by `index.js` or `index.web.js` to a composite feature exported by `modules/index.js`.
+
+#### Server Feature Structure
+
+Server modules enapsulate definition of graphql types and resolvers, and database model definition and methods.
+
+The command `yarn cli addmodule bar server` creates a folder with the following structure inside `src/server/modules`:
+
+```
+server/modules
+└── bar
+    ├── Bar.spec.js          # tests
+    ├── index.js             # exports the server Feature
+    ├── resolvers.js         # graphql resolver functions
+    ├── schema.graphqls      # Definition graphql types, queries and mutations
+    └── sql.js               # Knex model methods
 ```
 
 ## Features and examples included
